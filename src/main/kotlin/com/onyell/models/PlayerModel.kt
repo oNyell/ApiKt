@@ -11,5 +11,5 @@ data class PlayerModel(
     val accountCreated: Long?,
     val firstLong: Long?,
     var lastLogin: Long?,
-    var role: Int
+    var role: String
 )

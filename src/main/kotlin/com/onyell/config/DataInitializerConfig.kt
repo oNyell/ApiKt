@@ -19,19 +19,18 @@ class DataInitializerConfig(
     @Order(Ordered.HIGHEST_PRECEDENCE)
     fun initDefaultUsers() = CommandLineRunner {
         val adminUsername = "admin"
-        
-        // Verificar se o admin já existe
+
         if (playerRepository.findByUsername(adminUsername) == null) {
             loggerService.info("Criando usuário administrador padrão")
             
             val adminUser = PlayerModel(
                 id = 1,
                 username = adminUsername,
-                password = "admin123",  // Em produção, usar senha criptografada
+                password = "admin123",
                 accountCreated = System.currentTimeMillis(),
                 firstLong = System.currentTimeMillis(),
                 lastLogin = System.currentTimeMillis(),
-                role = 1
+                role = "ADMIN"
             )
             
             playerRepository.save(adminUser)
@@ -39,8 +38,7 @@ class DataInitializerConfig(
         } else {
             loggerService.info("Usuário administrador já existe: $adminUsername")
         }
-        
-        // Criar um usuário regular (opcional)
+
         val regularUsername = "user"
         if (playerRepository.findByUsername(regularUsername) == null) {
             loggerService.info("Criando usuário regular padrão")
@@ -48,11 +46,11 @@ class DataInitializerConfig(
             val regularUser = PlayerModel(
                 id = 2,
                 username = regularUsername,
-                password = "user123",  // Em produção, usar senha criptografada
+                password = "user123",
                 accountCreated = System.currentTimeMillis(),
                 firstLong = System.currentTimeMillis(),
                 lastLogin = System.currentTimeMillis(),
-                role = 0
+                role = "USER"
             )
             
             playerRepository.save(regularUser)

@@ -12,7 +12,7 @@ data class PlayerDTO(
     val accountCreated: LocalDateTime? = null,
     val firstLogin: LocalDateTime? = null,
     val lastLogin: LocalDateTime? = null,
-    val role: Int = 0
+    val role: String = "USER"
 ) {
     companion object {
         fun fromModel(model: PlayerModel): PlayerDTO {

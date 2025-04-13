@@ -36,8 +36,7 @@ class PlayerService(
     
     fun createPlayer(playerDTO: PlayerDTO): PlayerDTO {
         loggerService.info("Serviço: Criando novo jogador: ${playerDTO.username}")
-        
-        // Verificar se o username já existe
+
         playerRepository.findByUsername(playerDTO.username)?.let {
             loggerService.warning("Username já existe: ${playerDTO.username}")
             throw IllegalArgumentException("Username já existe")

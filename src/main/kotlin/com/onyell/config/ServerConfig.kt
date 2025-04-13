@@ -20,12 +20,10 @@ class ServerConfig(
     private var springServerPort: Int = 8080
 
     override fun customize(factory: ConfigurableWebServerFactory) {
-        // Verifica qual perfil está ativo
         val activeProfiles = environment.activeProfiles
         val isProd = activeProfiles.contains("prod")
         val isDev = activeProfiles.contains("dev")
-        
-        // Obtém a porta baseada no perfil
+
         val serverPort = when {
             isProd -> dotenv["SERVER_PORT_PROD"]?.toIntOrNull()
             isDev -> dotenv["SERVER_PORT_DEV"]?.toIntOrNull()
