@@ -1,4 +1,6 @@
 package com.onyell.dtos
 
-class PlayerDTO {
-}
+data class PlayerDTO (
+    var username: String,
+    var password: String
+)

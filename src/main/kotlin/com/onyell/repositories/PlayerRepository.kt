@@ -1,4 +1,6 @@
 package com.onyell.repositories
 
-class PlayerRepository {
-}
+import com.onyell.models.PlayerModel
+import org.springframework.data.mongodb.repository.MongoRepository
+
+interface PlayerRepository : MongoRepository<PlayerModel, String>
