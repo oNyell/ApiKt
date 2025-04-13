@@ -1,0 +1,15 @@
+server:
+  port: ${SERVER_PORT_PROD:8082}
+
+spring:
+  application:
+    name: ${APP_NAME_PROD:api-kt-prod}
+  data:
+    mongodb:
+      uri: ${MONGODB_URI_PROD:mongodb://localhost:27017/apiKtProd}
+      database: ${MONGODB_DATABASE_PROD:apiKtProd}
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: ${MONGO_LOG_LEVEL_PROD:INFO}
+    com.onyell: ${LOG_LEVEL_PROD:INFO} 
