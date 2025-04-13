@@ -1,0 +1,9 @@
+feat: implementa sistema completo de logging e configuração via .env
+
+- Adiciona serviço de logging com diferentes níveis
+- Implementa controller de log para testes
+- Integra logs em todos os componentes da aplicação
+- Adiciona suporte para configuração via arquivo .env
+- Configura perfis para desenvolvimento, produção e padrão
+- Atualiza a documentação com informações sobre configuração
+- Melhora o modelo de dados com DTOs 
