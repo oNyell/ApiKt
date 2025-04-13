@@ -8,6 +8,7 @@ import java.time.ZoneId
 data class PlayerDTO(
     val id: String? = null,
     val username: String,
+    val password: String? = null,
     val accountCreated: LocalDateTime? = null,
     val firstLogin: LocalDateTime? = null,
     val lastLogin: LocalDateTime? = null,
@@ -18,6 +19,7 @@ data class PlayerDTO(
             return PlayerDTO(
                 id = model.id.toString(),
                 username = model.username,
+                password = null,
                 accountCreated = model.accountCreated?.let { 
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) 
                 },
@@ -37,12 +39,13 @@ data class PlayerDTO(
         
         return existingModel?.copy(
             username = username,
+            password = password ?: existingModel.password,
             lastLogin = currentTime,
             role = role
         ) ?: PlayerModel(
             id = id?.toIntOrNull() ?: 0,
             username = username,
-            password = "",
+            password = password ?: "",
             accountCreated = currentTime,
             firstLong = currentTime,
             lastLogin = currentTime,
