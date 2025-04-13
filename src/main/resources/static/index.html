@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Teste</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], 
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .token-info {
+            background-color: #ffe0b2;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Teste</h1>
+
+    <div class="container">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" value="user">
+        </div>
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" value="user123">
+        </div>
+        <button onclick="login()">Entrar</button>
+        <button onclick="register()">Registrar</button>
+    </div>
+
+    <div class="container">
+        <h2>Token JWT</h2>
+        <div class="token-info" id="token-display">
+            Nenhum token disponível. Faça login primeiro.
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Testar Endpoints</h2>
+        <div class="buttons-container">
+            <button onclick="testPublicEndpoint()">Testar Endpoint Público</button>
+            <button onclick="testUserEndpoint()">Testar Endpoint do Usuário</button>
+            <button onclick="testAdminEndpoint()">Testar Endpoint Admin</button>
+            <button onclick="getUserInfo()">Ver Informações do Usuário</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Resposta</h2>
+        <div id="response">
+            A resposta da API vai aparecer aqui.
+        </div>
+    </div>
+
+    <script>
+        let token = '';
+
+        if (localStorage.getItem('jwtToken')) {
+            token = localStorage.getItem('jwtToken');
+            updateTokenDisplay();
+        }
+
+        function updateTokenDisplay() {
+            const tokenDisplay = document.getElementById('token-display');
+            if (token) {
+                tokenDisplay.innerHTML = `Token: ${token.substring(0, 20)}... <br>
+                    <button onclick="clearToken()">Limpar Token</button>`;
+            } else {
+                tokenDisplay.innerHTML = 'Nenhum token disponível. Faça login primeiro.';
+            }
+        }
+
+        function clearToken() {
+            token = '';
+            localStorage.removeItem('jwtToken');
+            updateTokenDisplay();
+            showResponse('Token removido.');
+        }
+
+        function showResponse(data) {
+            const responseElement = document.getElementById('response');
+            if (typeof data === 'object') {
+                responseElement.textContent = JSON.stringify(data, null, 2);
+            } else {
+                responseElement.textContent = data;
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    token = data.token;
+                    localStorage.setItem('jwtToken', token);
+                    updateTokenDisplay();
+                    showResponse({
+                        status: 'Login realizado com sucesso!',
+                        data
+                    });
+                } else {
+                    showResponse({
+                        status: 'Erro no login',
+                        error: data
+                    });
+                }
+            } catch (error) {
+                showResponse(`Erro ao se comunicar com o servidor: ${error.message}`);
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    token = data.token;
+                    localStorage.setItem('jwtToken', token);
+                    updateTokenDisplay();
+                    showResponse({
+                        status: 'Registro realizado com sucesso!',
+                        data
+                    });
+                } else {
+                    showResponse({
+                        status: 'Erro no registro',
+                        error: data
+                    });
+                }
+            } catch (error) {
+                showResponse(`Erro ao se comunicar com o servidor: ${error.message}`);
+            }
+        }
+
+        async function testPublicEndpoint() {
+            try {
+                const response = await fetch('/api/public/test');
+                const data = await response.json();
+                showResponse(data);
+            } catch (error) {
+                showResponse(`Erro ao acessar endpoint público: ${error.message}`);
+            }
+        }
+
+        async function testUserEndpoint() {
+            if (!token) {
+                showResponse('É necessário fazer login primeiro!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/players/test', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResponse(data);
+                } else {
+                    try {
+                        const data = await response.json();
+                        showResponse({
+                            status: `Erro ${response.status}`,
+                            error: data
+                        });
+                    } catch {
+                        const text = await response.text();
+                        showResponse({
+                            status: `Erro ${response.status}`,
+                            text: text
+                        });
+                    }
+                }
+            } catch (error) {
+                showResponse(`Erro ao acessar endpoint do usuário: ${error.message}`);
+            }
+        }
+
+        async function testAdminEndpoint() {
+            if (!token) {
+                showResponse('É necessário fazer login primeiro!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/test', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResponse(data);
+                } else {
+                    try {
+                        const data = await response.json();
+                        showResponse({
+                            status: `Erro ${response.status}`,
+                            error: data
+                        });
+                    } catch {
+                        const text = await response.text();
+                        showResponse({
+                            status: `Erro ${response.status}`,
+                            text: text
+                        });
+                    }
+                }
+            } catch (error) {
+                showResponse(`Erro ao acessar endpoint admin: ${error.message}`);
+            }
+        }
+
+        async function getUserInfo() {
+            if (!token) {
+                showResponse('É necessário fazer login primeiro!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResponse(data);
+                } else {
+                    const text = await response.text();
+                    showResponse(`Erro ${response.status}: ${text}`);
+                }
+            } catch (error) {
+                showResponse(`Erro ao obter informações do usuário: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html> 
